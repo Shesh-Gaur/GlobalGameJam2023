@@ -11,7 +11,7 @@ public class Sounds : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        SoundManager.soundManager.allSounds.Add(this);
     }
 
     // Update is called once per frame
@@ -26,5 +26,16 @@ public class Sounds : MonoBehaviour
             volume = 0;
             Destroy(this);
         }
+    }
+
+    private void OnDestroy()
+    {
+        SoundManager.soundManager.allSounds.Remove(this);
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.blue;
+        Gizmos.DrawWireSphere(transform.position, volume);
     }
 }

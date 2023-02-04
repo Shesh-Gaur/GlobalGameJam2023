@@ -4,72 +4,45 @@ using UnityEngine;
 
 public class StationaryEnemy : Enemy
 {
-    public float listeningRadius = 5.0f;
-    public static float detectionMax = 1.0f;
-    float detection = detectionMax;
-
-    public static float distractionTimerMax = 3.0f;
-    float distrationTimer = distractionTimerMax;
-
-    public float movementSpeed = 1.0f;
     public float searchAngle = 45.0f;
     Quaternion startAngle;
-
-    public float detectionDissapationRate = 0.8f;
-
-    bool detectingPlayer = false;
-
 
     // Start is called before the first frame update
     void Start()
     {
+        detection = detectionMax;
         startAngle = transform.rotation;
+        statusLight = GetComponentInChildren<Light>();
+        statusLight.spotAngle = sightAngle;
     }
 
     // Update is called once per frame
     void Update()
-    {
+    { 
         Listen();
+        See();
 
-        if (detectingPlayer)
-        {
-            detection += Time.deltaTime;
-            if (detection > detectionMax)
-                Detected();
-        }
+        if (distrationTimer <= 0)
+            Search();
         else
         {
-            detection -= detectionDissapationRate * Time.deltaTime;
+            distrationTimer -= Time.deltaTime;
+            Distracted();
         }
     }
 
-    void Listen()
+    void Search()
     {
-        foreach (Sounds s in SoundManager.soundManager.allSounds)
-        {
-            float dist = (transform.position - s.transform.position).magnitude;
-
-            if (s.volume > (dist - listeningRadius))
-                distrationTimer = distractionTimerMax;
-        }
+        float rY = Mathf.SmoothStep(-searchAngle / 2.0f, searchAngle / 2.0f, Mathf.PingPong(Time.time * movementSpeed * 0.15f, 1));
+        transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(0, startAngle.eulerAngles.y + rY, 0), movementSpeed * Time.deltaTime);
     }
 
-    void Detected()
+    void Distracted()
     {
-        //Detected Screen
-        //Restart Level
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("Player"))      
-            detectingPlayer = true;      
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.CompareTag("Player"))      
-            detectingPlayer = false;    
+        Vector3 dir = lastHeardSoundPos - transform.position;
+        dir.y = 0.0f;
+        transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(dir), movementSpeed * Time.deltaTime);
+        statusLight.color = Color.Lerp(statusLight.color, Color.yellow, Time.deltaTime);
     }
 
 }

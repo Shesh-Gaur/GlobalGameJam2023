@@ -7,10 +7,12 @@ public class SoundManager : MonoBehaviour
     public static SoundManager soundManager;
     public List<Sounds> allSounds = new List<Sounds>();
     // Start is called before the first frame update
-    void Start()
+
+    private void Awake()
     {
         soundManager = this;
     }
+
 
     // Update is called once per frame
     void Update()
