@@ -35,7 +35,7 @@ public class PlayerController : MonoBehaviour
     RaycastHit clamberHit;
 
     //Refernce to the object we hold, gravity gun style
-    HeldObject _heldObject;
+    public HeldObject _heldObject;
 
     #region Cereal
     //Components
@@ -172,6 +172,7 @@ public class PlayerController : MonoBehaviour
 
             if (Physics.Raycast(clamberRaycastOrigin, Vector3.down, out clamberHit, clamberRaycastMaxDistance))
             {
+                Debug.DrawLine(clamberRaycastOrigin, clamberHit.point);
                 if (Vector3.Angle(clamberHit.normal, Vector3.up) < 45f)
                 {
                     if (!Physics.Raycast(transform.position, Vector3.up, 1.75f, _groundCheckLayerMask))
@@ -284,6 +285,7 @@ public class PlayerController : MonoBehaviour
         onFoot.Crouch.performed += _ => Crouch();
         onFoot.Interact.performed += _ => Interact();
         onFoot.Clamber.performed += _ => Clamber();
+        onFoot.Fire.performed += _ => Fire();
 
         onFoot.Enable();
     }
