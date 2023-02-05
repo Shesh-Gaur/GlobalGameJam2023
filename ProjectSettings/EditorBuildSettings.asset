@@ -6,9 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/AB_SwapTension 1.unity
-    guid: 52161d1d20e1a8540830e4fd2d1c4621
-  - enabled: 1
     path: Assets/Scenes/TitleScreen.unity
     guid: d3485b663cb17ab479bcf9f2e231070d
+  - enabled: 1
+    path: Assets/Scenes/AB_SwapTension 1.unity
+    guid: 52161d1d20e1a8540830e4fd2d1c4621
   m_configObjects: {}

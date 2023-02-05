@@ -27,7 +27,7 @@ public class winGame : MonoBehaviour
         timer -= Time.deltaTime;
 
         if (timer <= 0.0f)
-            SceneManager.LoadScene(1);
+            SceneManager.LoadScene(0);
 
     }
 }
