@@ -76,6 +76,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "View",
+                    "type": "Button",
+                    "id": "d4afdc31-0621-456d-afb8-d99d951f5cd7",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -147,17 +156,6 @@
                 },
                 {
                     "name": "",
-                    "id": "5407cbd6-80c5-4cda-a456-82914b740a02",
-                    "path": "<Keyboard>/space",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Clamber",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "b9bb239c-ccfc-446b-8493-87f81b673514",
                     "path": "<Keyboard>/e",
                     "interactions": "",
@@ -208,6 +206,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Swap",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "66fa7d54-2024-409c-962c-6082c557b4a8",
+                    "path": "<Mouse>/middleButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "View",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
