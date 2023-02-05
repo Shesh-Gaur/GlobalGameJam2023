@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
 public struct HeldObject
@@ -36,6 +37,10 @@ public class PlayerController : MonoBehaviour
 
     //Refernce to the object we hold, gravity gun style
     public HeldObject _heldObject;
+
+    bool _isMoving = false;
+    bool _isFalling = false;
+    bool _isFootstepsCoroutineRunning = false;
 
     #region Cereal
     //Components
@@ -87,6 +92,14 @@ public class PlayerController : MonoBehaviour
 
     [Tooltip("The force with which held items are thrown.")]
     [SerializeField] float _throwForce = 100f;
+
+    [Header("UnityEvent FMOD Triggers")]
+    [SerializeField] UnityEvent _onFootstep;
+    [SerializeField] UnityEvent _onJump;
+    [SerializeField] UnityEvent _onLand;
+    [SerializeField] UnityEvent _onCrouch;
+    [SerializeField] UnityEvent _onStand;
+
     #endregion
 
     #region Player Actions
@@ -94,11 +107,24 @@ public class PlayerController : MonoBehaviour
     private void Move()
     {
         Vector2 input = onFoot.Move.ReadValue<Vector2>();
+        if (input.x != 0 || input.y != 0)
+        {
+            _isMoving = true;
+        }
+        else
+        {
+            _isMoving = false;
+        }
         Vector3 force = transform.right * input.x + transform.forward * input.y;
         force = force * _movementSpeed * Time.deltaTime;
         if (!isGrounded)
         {
             force *= _airSpeed;
+        }
+        else
+        {
+            if (!_isFootstepsCoroutineRunning)
+                StartCoroutine(FootstepsSFX());
         }
 
         Vector3 velocity = _rigidbody.velocity;
@@ -128,6 +154,7 @@ public class PlayerController : MonoBehaviour
     {
         if(isGrounded)
         {
+            _onJump?.Invoke();
             _rigidbody.AddForce(transform.up * _jumpForce);
         }
     }
@@ -136,11 +163,13 @@ public class PlayerController : MonoBehaviour
     {
         if (isCrouching)
         {
+            _onStand?.Invoke();
             isCrouching = false;
             transform.localScale = Vector3.one;
         }
         else
         {
+            _onCrouch?.Invoke();
             isCrouching = true;
             transform.localScale = new Vector3(1, 0.5f, 1);
         }
@@ -192,6 +221,18 @@ public class PlayerController : MonoBehaviour
                 }
             }
         }
+    }
+
+    IEnumerator FootstepsSFX()
+    {
+        _isFootstepsCoroutineRunning = true;
+        if (_isMoving)
+        {
+            _onFootstep?.Invoke();
+
+            yield return new WaitForSeconds(_movementSpeed / 12.0f);
+        }
+        _isFootstepsCoroutineRunning = false;
     }
 
     #endregion
@@ -251,6 +292,13 @@ public class PlayerController : MonoBehaviour
         heldObjectUpdate();
         
         isGrounded = Physics.CheckSphere(_groundCheck.transform.position, 0.1f, _groundCheckLayerMask);
+        if (!isGrounded)
+            _isFalling = true;
+        if (isGrounded && _isFalling)
+        {
+            _onLand?.Invoke();
+            _isFalling = false;
+        }
 
         //Raycast - What is the player looking at?
         _hitLanded = Physics.Raycast(_camera.transform.position, _camera.transform.forward, out hit, _interactionDistance);

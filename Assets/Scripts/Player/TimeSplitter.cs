@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using UnityEditor.Animations;
 using UnityEditor.ShaderGraph;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class TimeSplitter : MonoBehaviour
 {
     [SerializeField] PlayerController controller;
-
-    [SerializeField] GameObject _camera;
 
     [SerializeField] bool inAltWorld = false;
 
@@ -17,11 +16,12 @@ public class TimeSplitter : MonoBehaviour
     PlayerControls controls;
     PlayerControls.OnFootActions onFoot;
 
-    bool cameraSwapped;
+    [SerializeField] UnityEvent _onSwitchTimelines;
 
     private void Teleport()
     {
         Debug.Log("Teleporting");
+        _onSwitchTimelines?.Invoke();
         if(inAltWorld)
         {
             transform.position = transform.position - Offset;
@@ -39,32 +39,6 @@ public class TimeSplitter : MonoBehaviour
                 controller._heldObject.transform.position = controller._heldObject.transform.position + Offset;
             }
             inAltWorld = true;
-        }
-    }
-
-    void View()
-    {
-        if (inAltWorld)
-        {
-            if (!cameraSwapped)
-            {
-                _camera.transform.position = _camera.transform.position - Offset;
-            }
-            else
-            {
-                _camera.transform.position = _camera.transform.position + Offset;
-            }
-        }
-        else
-        {
-            if (!cameraSwapped)
-            {
-                _camera.transform.position = _camera.transform.position + Offset;
-            }
-            else
-            {
-                _camera.transform.position = _camera.transform.position - Offset;
-            }
         }
     }
 
@@ -91,19 +65,5 @@ public class TimeSplitter : MonoBehaviour
     void Reset()
     {
         Offset = new Vector3(0, 1000, 0);
-    }
-
-    void Update()
-    {
-        if(onFoot.View.ReadValue<float>() > 0 && !cameraSwapped)
-        {
-            View();
-            cameraSwapped = true;
-        }
-        if(cameraSwapped && onFoot.View.ReadValue<float>() == 0)
-        {
-            View();
-            cameraSwapped = false;
-        }
     }
 }
