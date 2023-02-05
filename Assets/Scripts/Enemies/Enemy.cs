@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 
 
@@ -23,6 +24,13 @@ public class Enemy : MonoBehaviour
     public float movementSpeed = 1.0f;
     float detectionSpeed = 1.0f;
 
+    [Header("UnityEvents for Audio Triggers")]
+    [SerializeField] UnityEvent _onDistract;
+    [SerializeField] UnityEvent _onDetect;
+    float _soundCooldown = 2.0f;
+    bool _isCoroutineRunning = false;
+    bool _detectingStingerPlayed = false;
+
     protected void Listen()
     {
         foreach (Sounds s in SoundManager.soundManager.allSounds)
@@ -32,6 +40,8 @@ public class Enemy : MonoBehaviour
             if (s.volume > (dist - listeningRadius))
             {
                 Debug.Log("Sound Heard!");
+                if (!_isCoroutineRunning)
+                    StartCoroutine(TriggerSFX(0));
                 lastHeardSoundPos = s.transform.position;
                 distrationTimer = distractionTimerMax;
 
@@ -46,6 +56,11 @@ public class Enemy : MonoBehaviour
 
         if (detectingPlayer)
         {
+            if (!_isCoroutineRunning && !_detectingStingerPlayed)
+            {
+                StartCoroutine(TriggerSFX(1));
+                _detectingStingerPlayed = true;
+            }
             detection += detectionSpeed * Time.deltaTime;
 
             if (detection > detectionMax)
@@ -58,6 +73,7 @@ public class Enemy : MonoBehaviour
         }
 
         detectingPlayer = false;
+        _detectingStingerPlayed = false;
 
         Vector3 dir = target.transform.position - transform.position;
         float dist = dir.magnitude;
@@ -116,11 +132,24 @@ public class Enemy : MonoBehaviour
 
     void Detected()
     {
+        StartCoroutine(TriggerSFX(1));
         Debug.Log("Game Over");
 
         //Detected Screen
 
         //Restart Level      
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    IEnumerator TriggerSFX(int index)
+    {
+        _isCoroutineRunning = true;
+        if (index == 0)
+            _onDistract?.Invoke();
+        else
+            _onDetect?.Invoke();
+        yield return new WaitForSeconds(_soundCooldown);
+        _isCoroutineRunning = false;
+        yield return null;
     }
 }
