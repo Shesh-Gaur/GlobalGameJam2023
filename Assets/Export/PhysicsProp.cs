@@ -33,6 +33,7 @@ public class PhysicsProp : WorldEntity
 
         if (_health <= 0)
         {
+            //Instantiate<Sounds>(, transform);
             Kill();
         }
     }
