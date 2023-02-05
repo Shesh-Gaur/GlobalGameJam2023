@@ -33,7 +33,7 @@ public class PhysicsProp : WorldEntity
 
         if (_health <= 0)
         {
-            Instantiate(distractionSound, transform);
+            Instantiate(distractionSound,transform.position, Quaternion.identity);
             Kill();
         }
     }
