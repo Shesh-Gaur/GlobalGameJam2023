@@ -51,6 +51,9 @@ public class PlayerController : MonoBehaviour
     [Tooltip("The base player movement speed when running.")]
     [SerializeField] float _movementSpeed = 4000f;
 
+    [Tooltip("The velocity the player must reach before the controller stops applying it's force.")]
+    [SerializeField] float _maxVelocity = 20f;
+
     [Tooltip("A multiplier applied when the player attempts to move when in the air.")]
     [SerializeField] float _airSpeed = 0.2f;
 
@@ -98,7 +101,14 @@ public class PlayerController : MonoBehaviour
             force *= _airSpeed;
         }
 
-        _rigidbody.AddForce(force);
+        Vector3 velocity = _rigidbody.velocity;
+
+        float vel = Vector3.Project(velocity, force).magnitude;
+
+        if(vel < _maxVelocity)
+        {
+            _rigidbody.AddForce(force);
+        }
     }
 
     private void Look()
@@ -302,11 +312,6 @@ public class PlayerController : MonoBehaviour
 
     private void Reset()
     {
-        _capsuleCollider = GetComponent<CapsuleCollider>();
-        _rigidbody = GetComponent<Rigidbody>();
-        _camera = Camera.main.gameObject;
-        _groundCheck = GameObject.Find("GroundCheck");
-
         _movementSpeed = 80000;
         _airSpeed = 0.05f;
         _lookSensitivity = 100f;
