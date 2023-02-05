@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEditor.Animations;
 using UnityEditor.ShaderGraph;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class TimeSplitter : MonoBehaviour
 {
@@ -15,9 +16,12 @@ public class TimeSplitter : MonoBehaviour
     PlayerControls controls;
     PlayerControls.OnFootActions onFoot;
 
+    [SerializeField] UnityEvent _onSwitchTimelines;
+
     private void Teleport()
     {
         Debug.Log("Teleporting");
+        _onSwitchTimelines?.Invoke();
         if(inAltWorld)
         {
             transform.position = transform.position - Offset;
