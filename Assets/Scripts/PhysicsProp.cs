@@ -6,9 +6,9 @@ public class PhysicsProp : WorldEntity
 {
     [SerializeField] float _health;
     [Tooltip("The minimum force required to do damage to the object.")]
-    [SerializeField] float _damageForceThreshold;
-
+    [SerializeField] float _damageForceThreshold;   
     [HideInInspector] public bool held = false;
+    [SerializeField] Sounds distractionSound;
 
     //Rigidbody rb;
     PlayerController controller;
@@ -33,7 +33,7 @@ public class PhysicsProp : WorldEntity
 
         if (_health <= 0)
         {
-            //Instantiate<Sounds>(, transform);
+            Instantiate(distractionSound, transform);
             Kill();
         }
     }

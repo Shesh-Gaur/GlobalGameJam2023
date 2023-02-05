@@ -21,6 +21,7 @@ public class Enemy : MonoBehaviour
     public float distractionTimerMax = 3.0f;
     protected float distrationTimer = 0.0f;
     public float movementSpeed = 1.0f;
+    float detectionSpeed = 1.0f;
 
     protected void Listen()
     {
@@ -45,7 +46,7 @@ public class Enemy : MonoBehaviour
 
         if (detectingPlayer)
         {
-            detection += Time.deltaTime;
+            detection += detectionSpeed * Time.deltaTime;
 
             if (detection > detectionMax)
                 Detected();
@@ -86,6 +87,16 @@ public class Enemy : MonoBehaviour
             // If raycast hits fill detection meter
             Debug.DrawRay(transform.position, dir, Color.green);
             //Debug.Log("Player Spotted!");
+
+            if (hit.collider.GetComponent<PlayerController>() != null && hit.collider.GetComponent<PlayerController>().isCrouching)
+            {
+                detectionSpeed = 0.7f;
+            }
+            else
+            {
+                detectionSpeed = 1.0f;
+            }
+
             detectingPlayer = true;
         }
         else

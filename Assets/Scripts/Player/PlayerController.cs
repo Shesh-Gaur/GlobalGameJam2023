@@ -26,7 +26,7 @@ public class PlayerController : MonoBehaviour
     
     //States - We will switch to a state pattern... one day :(
     bool isGrounded;
-    bool isCrouching;
+    public bool isCrouching;
     public bool isHoldingObject;
 
     RaycastHit hit;
